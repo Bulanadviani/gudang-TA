@@ -120,16 +120,16 @@
             @foreach($keluarData as $item)
                 <tr>
                     <td class="col-id">{{ $loop->iteration }}</td> {{-- Nomor Urut --}}
-                    <td class="col-kode-rak">{{ $item->kode_rak }}</td>
-                    <td class="col-serial-number">{{ $item->serial_number }}</td>
-                    <td class="col-kode-material">{{ $item->kode_material }}</td>
-                    <td class="col-merk">{{ $item->merk }}</td>
-                    <td class="col-kategori">{{ $item->kategori }}</td>
-                    <td class="col-keadaan">{{ $item->keadaan }}</td>
-                    <td class="col-lokasi">{{ $item->lokasi }}</td>
-                    <td class="col-status">{{ $item->status }}</td>
-                    <td class="col-spesifikasi">{{ $item->spesifikasi }}</td>
-                    <td class="col-keterangan">{{ $item->keterangan }}</td>
+                    <td class="col-kode-rak">{{ $item->barang->kode_rak }}</td>
+                    <td class="col-serial-number">{{ $item->barang->serial_number }}</td>
+                    <td class="col-kode-material">{{ $item->barang->kode_material }}</td>
+                    <td class="col-merk">{{ $item->barang->merk['nama'] }}</td>
+                    <td class="col-kategori">{{ $item->barang->kategori['nama'] }}</td>
+                    <td class="col-keadaan">{{ $item->barang->keadaan['nama'] }}</td>
+                    <td class="col-lokasi">{{ $item->barang->lokasi['nama'] }}</td>
+                    <td class="col-status">{{ $item->barang->status['nama'] }}</td>
+                    <td class="col-spesifikasi">{{ $item->barang->spesifikasi }}</td>
+                    <td class="col-keterangan">{{ $item->barang->keterangan }}</td>
                     <td class="col-tanggal-keluar">{{ \Carbon\Carbon::parse($item->tanggal_keluar)->format('d M Y') }}</td>
                     <td class="col-created-at">{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i') }}</td>
                     <td class="col-updated-at">{{ \Carbon\Carbon::parse($item->updated_at)->format('d M Y H:i') }}</td>

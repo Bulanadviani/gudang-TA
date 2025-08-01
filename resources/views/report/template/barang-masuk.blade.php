@@ -115,16 +115,16 @@
                 @foreach($masukData as $item)
                 <tr>
                     <td class="col-id">{{ $loop->iteration }}</td> {{-- Nomor Urut --}}
-                    <td class="col-kode-rak">{{ $item->kode_rak }}</td>
-                    <td class="col-serial-number">{{ $item->serial_number }}</td>
-                    <td class="col-material">{{ $item->kode_material }}</td>
-                    <td class="col-merk">{{ $item->merk }}</td>
-                    <td class="col-kategori">{{ $item->kategori }}</td>
-                    <td class="col-keadaan">{{ $item->keadaan }}</td>
-                    <td class="col-lokasi">{{ $item->lokasi }}</td>
-                    <td class="col-status">{{ $item->status }}</td>
-                    <td class="col-spesifikasi">{{ $item->spesifikasi }}</td>
-                    <td class="col-keterangan">{{ $item->keterangan }}</td>
+                    <td class="col-kode-rak">{{ $item->barang->kode_rak }}</td>
+                    <td class="col-serial-number">{{ $item->barang->serial_number }}</td>
+                    <td class="col-material">{{ $item->barang->kode_material }}</td>
+                    <td class="col-merk">{{ $item->barang->merk['nama'] }}</td>
+                    <td class="col-kategori">{{ $item->barang->kategori['nama'] }}</td>
+                    <td class="col-keadaan">{{ $item->barang->keadaan['nama'] }}</td>
+                    <td class="col-lokasi">{{ $item->barang->lokasi['nama'] }}</td>
+                    <td class="col-status">{{ $item->barang->status['nama'] }}</td>
+                    <td class="col-spesifikasi">{{ $item->barang->spesifikasi }}</td>
+                    <td class="col-keterangan">{{ $item->barang->keterangan }}</td>
                     <td class="col-tanggal-masuk">{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}</td>
                 </tr>
             @endforeach

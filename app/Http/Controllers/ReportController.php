@@ -69,6 +69,8 @@ class ReportController extends Controller
         // Dapatkan data dari metode collection() di MasukExport
         $masukData = $export->collection();
 
+        $masukData = Masuk::with('barang')->get();
+
         if ($type === "pdf") {
             $pdf = Pdf::loadView('report.template.barang-masuk', compact('masukData'))
                   ->setPaper('a2', 'landscape');
@@ -85,6 +87,18 @@ public function downloadReportKeluar(Request $request, string $type)
 
     // Get the collection of data directly from the export class's collection() method
     $keluarData = $export->collection();
+
+    $keluarData = Keluar::with('barang')
+        // ->when($request->filled('tanggal_awal') && $request->filled('tanggal_akhir'), function ($query) use ($request) {
+        //     $query->whereBetween('tanggal_keluar', [$request->tanggal_awal, $request->tanggal_akhir]);
+        // })
+        // ->orderBy('tanggal_keluar', 'asc')
+        ->get();
+
+    // $pdf = Pdf::loadView('laporan.keluar_pdf', compact('keluarData'))
+    //     ->setPaper('a4', 'landscape');
+
+    // return $pdf->download('laporan-barang-keluar.pdf');
 
     if ($type === "pdf") {
         // Pass the obtained data to your PDF view

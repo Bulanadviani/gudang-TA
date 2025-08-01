@@ -23,24 +23,24 @@ class KeluarExport implements FromCollection, WithHeadings, ShouldAutoSize, With
         ->leftJoin('lokasi', 'barang.lokasi_id', '=', 'lokasi.id')
         ->leftJoin('status', 'barang.status_id', '=', 'status.id')
         ->select([
-            'barang.kode_rak',
-            'barang.serial_number',
-            'barang.kode_material',
+            'barang.kode_rak as kode_rak',
+            'barang.serial_number as serial_number',
+            'barang.kode_material as kode_maretial',
             'merk.nama as merk',
-            'barang.spesifikasi',
+            'barang.spesifikasi as spesifikasi',
             'kategori.nama as kategori',
             'keadaan.nama as keadaan',
             'lokasi.nama as lokasi',
             'status.nama as status',
-            'barang.keterangan',
-            'keluar.tanggal_keluar',
-            'keluar.created_at',
-            'keluar.updated_at'
+            'barang.keterangan as keterangan',
+            'keluar.tanggal_keluar as tanggal_keluar',
+            'keluar.created_at as created_at',
+            'keluar.updated_at as updated_at'
         ])->get();
 
     // Tambahkan nomor urut
     $dataWithNumber = $data->map(function ($item, $index) {
-        return collect([
+        return collect ([
             'No' => $index + 1,
             'Kode Rak' => $item->kode_rak,
             'Serial Number' => $item->serial_number,
