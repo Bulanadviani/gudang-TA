@@ -46,6 +46,10 @@
                         <div class="col-4 mb-2"><x-inputs.select-lokasi id="filter-lokasi" selectId="nama" /></div>
                         <div class="col-4 mb-2"><input type="text" id="filter-keterangan" class="form-control"
                                 placeholder="Keterangan"></div>
+                        <div class="col-4 mb-2">
+    <label>Tanggal Masuk</label>
+    <input type="date" id="filter-tanggal_masuk" class="form-control" placeholder="Tanggal Masuk">
+</div>
                         <div class="col-4 mb-2"><label>Tanggal Keluar</label><input type="date" id="filter-tanggal_keluar" class="form-control" placeholder="Tanggal Keluar"></div>
                     </div>
                 </div>
@@ -65,6 +69,7 @@
                                 <th>Lokasi</th>
                                 <th>Status</th>
                                 <th>Keterangan</th>
+                                <th>Tanggal Masuk</th>
                                 <th>Tanggal Keluar</th>
                                 <th>Bukti Serah Terima</th>
                                 <th>File Berita Acara</th>
@@ -187,6 +192,10 @@
                     name: 'keluar.keterangan'
                 },
                 {
+                    data: 'tanggal_masuk',
+                    name: 'masuk.tanggal_masuk'
+                },
+                {
                     data: 'tanggal_keluar',
                     name: 'keluar.tanggal_keluar'
                 },
@@ -214,7 +223,8 @@
             'lokasi': 8,
             'status': 9,
             'keterangan': 10,
-            'tanggal_keluar': 11,
+            'tanggal_masuk': 11,
+            'tanggal_keluar': 12,
         };
 
         table.on('init.dt', function() {

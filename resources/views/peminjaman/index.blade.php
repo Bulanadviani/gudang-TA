@@ -61,6 +61,10 @@
                     <div class="col-4 mb-2"><x-inputs.select-merk id="filter-merk" selectId="nama"/></div>
                     <div class="col-4 mb-2"><input type="text" id="filter-spesifikasi" class="form-control" placeholder="Spesifikasi"></div>
                     <div class="col-4 mb-2"><x-inputs.select-kategori id="filter-kategori" selectId="nama" /></div>
+                    <div class="col-4 mb-2">
+    <label>Tanggal Masuk</label>
+    <input type="date" id="filter-tanggal_masuk" class="form-control" placeholder="Tanggal Masuk">
+</div>
                     <div class="col-4 mb-2"><label>Tanggal BASTP</label><input type="date" id="filter-tanggal_bastp" class="form-control" placeholder="Tanggal BASTP"></div>
                     <div class="col-4 mb-2"><label>Tanggal Selesai</label><input type="date" id="filter-tanggal_selesai" class="form-control" placeholder="Tanggal selesai"></div>
                     <div class="col-4 mb-2"><input type="text" id="filter-pic" class="form-control" placeholder="PIC"></div>
@@ -79,6 +83,7 @@
                             <th>Merk</th>
                             <th>Spesifikasi</th>
                             <th>Kategori</th>
+                            <th>Tanggal Masuk</th>
                             <th>Tanggal BASTP</th>
                             <th>Tanggal Selesai</th>
                             <th>PIC</th>
@@ -192,6 +197,10 @@
                 name: 'kategori.nama'
             },
             {
+                    data: 'tanggal_masuk',
+                    name: 'masuk.tanggal_masuk'
+                },
+            {
                 data: 'tanggal_bastp',
                 name: 'peminjaman.tanggal_bastp'
             },
@@ -257,10 +266,11 @@
                 'merk': 4,
                 'spesifikasi': 5,
                 'kategori': 6,
-                'tanggal_bastp': 7,
-                'tanggal_selesai': 8,
-                'pic': 9,
-                'keterangan': 10,
+                'tanggal_masuk': 7,
+                'tanggal_bastp': 8,
+                'tanggal_selesai': 9,
+                'pic': 10,
+                'keterangan': 11,
             };
 
             Object.entries(columnIndexes).forEach(([key, index]) => {

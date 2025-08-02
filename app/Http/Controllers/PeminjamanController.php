@@ -33,6 +33,7 @@ class PeminjamanController extends Controller
                 ->join('merk', 'merk.id', '=', 'barang.merk_id')
                 ->join('kategori', 'kategori.id', '=', 'barang.kategori_id')
                 ->join('users', 'users.id', '=', 'peminjaman.pic')
+                ->leftJoin('masuk', 'masuk.barang_id', '=', 'barang.id')
                 ->select([
                     'peminjaman.nomor_surat',
                     'barang.serial_number',
@@ -40,6 +41,7 @@ class PeminjamanController extends Controller
                     'merk.nama as merk',
                     'barang.spesifikasi',
                     'kategori.nama as kategori',
+                    'masuk.tanggal_masuk',
                     'peminjaman.tanggal_bastp',
                     'peminjaman.tanggal_selesai',
                     'users.name as pic',

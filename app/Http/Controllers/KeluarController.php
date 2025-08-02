@@ -29,6 +29,7 @@ class KeluarController extends Controller
                 ->join('lokasi', 'lokasi.id', '=', 'barang.lokasi_id')
                 ->join('merk', 'merk.id', '=', 'barang.merk_id')
                 ->join('kategori', 'kategori.id', '=', 'barang.kategori_id')
+                ->leftJoin('masuk', 'masuk.barang_id', '=', 'barang.id')
                 ->where('status.jenis', 'keluar')
                 ->select([
                     'keluar.id',
@@ -43,6 +44,7 @@ class KeluarController extends Controller
                     'lokasi.nama as lokasi',
                     'status.nama as status',
                     // 'barang.keterangan as keterangan_barang',
+                    'masuk.tanggal_masuk',
                     'keluar.tanggal_keluar',
                     'keluar.bukti_pengeluaran',
                     'keluar.keterangan as keterangan_keluar',
