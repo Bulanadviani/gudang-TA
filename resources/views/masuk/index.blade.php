@@ -62,7 +62,6 @@
         </div>
 
         {{-- Tabel Barang --}}
-        {{-- Tabel Barang --}}
         <div class="card">
             <div class="card-body">
                 <p>
@@ -158,7 +157,7 @@
     <div class="modal fade" id="multiEditModal" tabindex="-1" role="dialog" aria-labelledby="multiEditModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form id="formMultiEdit" method="POST" action="{{ route('masuk.multi-edit') }}">
+            <form id="formMultiEdit" method="POST" action="{{ route('masuk.multi-edit') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="barang_ids" id="selectedBarangIds">
                 <div class="modal-content">
@@ -177,11 +176,22 @@
                         </div>
 
                         <div id="keluarFields" style="display: none;">
-                            <div class="form-group">
-                                <label>Tanggal Keluar</label>
-                                <input type="date" class="form-control" name="tanggal_keluar">
-                            </div>
-                        </div>
+    <div class="form-group">
+        <label>Tanggal Keluar</label>
+        <input type="date" class="form-control" name="tanggal_keluar">
+    </div>
+
+    <div class="form-group">
+        <label>Upload Berita Acara (PDF)</label>
+        <input type="file" class="form-control-file" name="berita_acara" accept=".pdf">
+    </div>
+
+    <div class="form-group">
+        <label>Keterangan</label>
+        <textarea class="form-control" name="keterangan_keluar" rows="3" placeholder="Tambahkan keterangan jika diperlukan..."></textarea>
+    </div>
+</div>
+
 
                         <div id="peminjamanFields" style="display: none;">
                             <div class="form-group">

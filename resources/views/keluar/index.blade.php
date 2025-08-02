@@ -183,8 +183,8 @@
                     name: 'status.nama'
                 },
                 {
-                    data: 'keterangan',
-                    name: 'barang.keterangan'
+                    data: 'keterangan_keluar',
+                    name: 'keluar.keterangan'
                 },
                 {
                     data: 'tanggal_keluar',

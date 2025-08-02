@@ -42,9 +42,10 @@ class KeluarController extends Controller
                     'keadaan.nama as keadaan',
                     'lokasi.nama as lokasi',
                     'status.nama as status',
-                    'barang.keterangan',
+                    // 'barang.keterangan as keterangan_barang',
                     'keluar.tanggal_keluar',
                     'keluar.bukti_pengeluaran',
+                    'keluar.keterangan as keterangan_keluar',
                     'keluar.created_at',
                     'keluar.updated_at'
                 ]);

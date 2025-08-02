@@ -97,7 +97,7 @@
     <div class="modal fade" id="multiEditModal" tabindex="-1" role="dialog" aria-labelledby="multiEditModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form id="formMultiEdit" method="POST" action="{{ route('peminjaman.multi-edit') }}">
+            <form id="formMultiEdit" method="POST" action="{{ route('peminjaman.multi-edit') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="barang_ids" id="selectedBarangIds">
                 <div class="modal-content">
@@ -123,12 +123,23 @@
                         </div>
 
                         <div id="keluarFields" style="display: none;">
-                            <div class="form-group">
-                                <label>Tanggal Keluar</label>
-                                <input type="date" class="form-control" name="tanggal_keluar">
-                            </div>
-                        </div>
-                    </div>
+    <div class="form-group">
+        <label>Tanggal Keluar</label>
+        <input type="date" class="form-control" name="tanggal_keluar">
+    </div>
+
+    {{-- Tambahkan ini --}}
+    <div class="form-group">
+        <label>Berita Acara (PDF)</label>
+        <input type="file" class="form-control-file" name="berita_acara" accept="application/pdf">
+        <small class="text-muted">Maks. 2MB</small>
+    </div>
+
+    <div class="form-group">
+        <label>Keterangan</label>
+        <textarea class="form-control" name="keterangan_keluar" rows="2"></textarea>
+    </div>
+</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>

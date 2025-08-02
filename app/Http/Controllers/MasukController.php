@@ -84,24 +84,37 @@ class MasukController extends Controller
     $tujuan = $request->tujuan;
 
     if ($tujuan === 'keluar') {
-        $request->validate([
-            'tanggal_keluar' => 'required|date',
-        ]);
+    $request->validate([
+        'tanggal_keluar' => 'required|date',
+        'berita_acara' => 'nullable|file|mimes:pdf|max:2048',
+        'keterangan_keluar' => 'nullable|string|max:1000',
+    ]);
 
-        $statusKeluar = Status::where('nama', 'Barang Keluar')->first();
-        if (!$statusKeluar) {
-            return redirect()->back()->with('error', 'Status "Barang Keluar" tidak ditemukan di database.');
-        }
+    // Simpan file berita acara jika ada
+    $filePath = null;
+    if ($request->hasFile('berita_acara')) {
+        $file = $request->file('berita_acara');
+        $filePath = $file->store('berita_acara_keluar', 'public');
+    }
 
-        foreach ($ids as $id) {
-            Keluar::create([
-                'barang_id' => $id,
-                'tanggal_keluar' => $request->tanggal_keluar,
-                'created_by' => Auth::id(),
-            ]);
+    // Ambil status 'Barang Keluar'
+    $statusKeluar = Status::where('nama', 'Barang Keluar')->first();
+    if (!$statusKeluar) {
+        return redirect()->back()->with('error', 'Status "Barang Keluar" tidak ditemukan di database.');
+    }
 
-            Barang::where('id', $id)->update(['status_id' => $statusKeluar->id]);
-        }
+    // Simpan data untuk setiap barang yang dipilih
+    foreach ($ids as $id) {
+        Keluar::create([
+    'barang_id' => $id,
+    'tanggal_keluar' => $request->tanggal_keluar,
+    'bukti_pengeluaran' => $filePath, 
+    'keterangan' => $request->keterangan_keluar,
+    'created_by' => Auth::id(),
+]);
+
+        Barang::where('id', $id)->update(['status_id' => $statusKeluar->id]);
+    }
 
     } elseif ($tujuan === 'peminjaman') {
         $request->validate([

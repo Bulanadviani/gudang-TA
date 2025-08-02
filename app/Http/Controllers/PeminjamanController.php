@@ -95,35 +95,44 @@ foreach ($ids as $id) {
         ]);
     }
 
-    Barang::where('id', $id)->update(['status_id' => $statusMasuk->id]);
+    Barang::where('id', $id)->update(['status_id' => $statusMasuk->id,]);
 
     Peminjaman::where('barang_id', $id)->delete();
 }
 
 
     } elseif ($tujuan === 'keluar') {
-        $request->validate([
-            'tanggal_keluar' => 'required|date',
+    $request->validate([
+        'tanggal_keluar' => 'required|date',
+        'berita_acara' => 'nullable|file|mimes:pdf|max:2048',
+    ]);
+
+    $filePath = null;
+    if ($request->hasFile('berita_acara')) {
+        $filePath = $request->file('berita_acara')->store('berita_acara_keluar', 'public');
+    }
+
+    $statusKeluar = Status::where('nama', 'Barang Keluar')->first();
+    if (!$statusKeluar) {
+        return redirect()->back()->with('error', 'Status "Keluar" tidak ditemukan di database.');
+    }
+
+    foreach ($ids as $id) {
+        Keluar::create([
+            'barang_id' => $id,
+            'tanggal_keluar' => $request->tanggal_keluar,
+            'bukti_pengeluaran' => $filePath,
+            'keterangan' => $request->keterangan_keluar,
+            'created_by' => Auth::id(),
         ]);
 
-        $statusKeluar = Status::where('nama', 'Barang Keluar')->first();
-        if (!$statusKeluar) {
-            return redirect()->back()->with('error', 'Status "Keluar" tidak ditemukan di database.');
-        }
+        Barang::where('id', $id)->update(['status_id' => $statusKeluar->id]);
 
-        foreach ($ids as $id) {
-            Keluar::create([
-                'barang_id' => $id,
-                'tanggal_keluar' => $request->tanggal_keluar,
-                'created_by' => Auth::id(),
-            ]);
-
-            Barang::where('id', $id)->update(['status_id' => $statusKeluar->id]);
-
-            // Hapus dari tabel peminjaman
-            Peminjaman::where('barang_id', $id)->delete();
-        }
+        // Hapus dari tabel peminjaman
+        Peminjaman::where('barang_id', $id)->delete();
     }
+}
+
 
     return redirect()->route('peminjaman.index')->with('success', 'Barang berhasil dipindahkan!');
 }

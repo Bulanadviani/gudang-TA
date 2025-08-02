@@ -15,6 +15,7 @@ class Keluar extends Model
         'barang_id',
         'tanggal_keluar',
         'bukti_pengeluaran',
+        'keterangan'
     ];
 
     public function barang()

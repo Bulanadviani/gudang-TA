@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Masuk;
 use App\Models\Keluar;
+use App\Models\Barang;
 use App\Models\Peminjaman;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -62,23 +63,31 @@ class ReportController extends Controller
 
 
     public function downloadReportMasuk(Request $request, string $type)
-    {
-        // Instansiasi MasukExport
-        $export = new MasukExport();
+{
+    $validBarangIds = Barang::whereNotNull('merk_id')
+        ->whereNotNull('lokasi_id')
+        ->whereNotNull('kategori_id')
+        ->whereNotNull('keadaan_id')
+        ->pluck('id');
 
-        // Dapatkan data dari metode collection() di MasukExport
-        $masukData = $export->collection();
+    $barangKeluarIds = Keluar::pluck('barang_id')->toArray();
+    $barangPeminjamanIds = Peminjaman::pluck('barang_id')->toArray();
+    $barangSudahKeluarAtauDipinjam = array_merge($barangKeluarIds, $barangPeminjamanIds);
 
-        $masukData = Masuk::with('barang')->get();
+    $masukData = Masuk::with(['barang.merk', 'barang.kategori', 'barang.keadaan', 'barang.lokasi', 'barang.status'])
+        ->whereIn('barang_id', $validBarangIds)
+        ->whereNotIn('barang_id', $barangSudahKeluarAtauDipinjam)
+        ->get();
 
-        if ($type === "pdf") {
-            $pdf = Pdf::loadView('report.template.barang-masuk', compact('masukData'))
-                  ->setPaper('a2', 'landscape');
-            return $pdf->download('laporan-barang-masuk.pdf');
-        }
-
-        return Excel::download($export, 'laporan-barang-masuk.xlsx');
+    if ($type === "pdf") {
+        $pdf = Pdf::loadView('report.template.barang-masuk', compact('masukData'))
+              ->setPaper('a2', 'landscape');
+        return $pdf->download('laporan-barang-masuk.pdf');
     }
+
+    return Excel::download(new MasukExport($masukData), 'laporan-barang-masuk.xlsx');
+}
+
     
 public function downloadReportKeluar(Request $request, string $type)
 {

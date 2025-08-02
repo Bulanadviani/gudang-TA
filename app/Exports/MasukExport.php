@@ -16,12 +16,27 @@ class MasukExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
      */
     public function collection()
 {
+    // Ambil ID barang yang valid (sudah lengkap relasinya)
+    $validBarangIds = Barang::whereNotNull('merk_id')
+        ->whereNotNull('lokasi_id')
+        ->whereNotNull('kategori_id')
+        ->whereNotNull('keadaan_id')
+        ->pluck('id');
+
+    // Ambil ID barang yang sudah keluar atau dipinjam
+    $barangKeluarIds = \App\Models\Keluar::pluck('barang_id')->toArray();
+    $barangPeminjamanIds = \App\Models\Peminjaman::pluck('barang_id')->toArray();
+    $barangSudahKeluarAtauDipinjam = array_merge($barangKeluarIds, $barangPeminjamanIds);
+
+    // Ambil data barang masuk yang valid dan belum keluar/dipinjam
     $data = Barang::join('masuk', 'barang.id', '=', 'masuk.barang_id')
         ->leftJoin('merk', 'barang.merk_id', '=', 'merk.id')
         ->leftJoin('kategori', 'barang.kategori_id', '=', 'kategori.id')
         ->leftJoin('keadaan', 'barang.keadaan_id', '=', 'keadaan.id')
         ->leftJoin('lokasi', 'barang.lokasi_id', '=', 'lokasi.id')
         ->leftJoin('status', 'barang.status_id', '=', 'status.id')
+        ->whereIn('barang.id', $validBarangIds)
+        ->whereNotIn('barang.id', $barangSudahKeluarAtauDipinjam)
         ->select([
             'barang.kode_rak',
             'barang.serial_number',
@@ -39,10 +54,10 @@ class MasukExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
         ])
         ->get();
 
-    // Tambahkan nomor urut (No) secara manual
+    // Tambahkan nomor urut
     $dataWithNumber = $data->map(function ($item, $index) {
         return collect([
-            'No' => $index + 1, // mulai dari 1
+            'No' => $index + 1,
             'Kode Rak' => $item->kode_rak,
             'Serial Number' => $item->serial_number,
             'Kode Material' => $item->kode_material,
@@ -61,6 +76,7 @@ class MasukExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
 
     return $dataWithNumber;
 }
+
 
 
     public function headings(): array
