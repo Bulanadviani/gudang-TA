@@ -96,8 +96,8 @@
                         <thead>
                             <tr>
                                 @can('masuk.update')
-            <th><input type="checkbox" id="select-all"></th>
-        @endcan
+                                    <th><input type="checkbox" id="select-all"></th>
+                                @endcan
                                 <th>No</th>
                                 <th>Kode Rak</th>
                                 <th>Serial Number</th>
@@ -159,7 +159,8 @@
     <div class="modal fade" id="multiEditModal" tabindex="-1" role="dialog" aria-labelledby="multiEditModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form id="formMultiEdit" method="POST" action="{{ route('masuk.multi-edit') }}" enctype="multipart/form-data">
+            <form id="formMultiEdit" method="POST" action="{{ route('masuk.multi-edit') }}"
+                enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="barang_ids" id="selectedBarangIds">
                 <div class="modal-content">
@@ -178,21 +179,22 @@
                         </div>
 
                         <div id="keluarFields" style="display: none;">
-    <div class="form-group">
-        <label>Tanggal Keluar</label>
-        <input type="date" class="form-control" name="tanggal_keluar">
-    </div>
+                            <div class="form-group">
+                                <label>Tanggal Keluar</label>
+                                <input type="date" class="form-control" name="tanggal_keluar">
+                            </div>
 
-    <div class="form-group">
-        <label>Upload Berita Acara (PDF)</label>
-        <input type="file" class="form-control-file" name="berita_acara" accept=".pdf">
-    </div>
+                            <div class="form-group">
+                                <label>Upload Berita Acara (PDF)</label>
+                                <input type="file" class="form-control-file" name="berita_acara" accept=".pdf">
+                            </div>
 
-    <div class="form-group">
-        <label>Keterangan</label>
-        <textarea class="form-control" name="keterangan_keluar" rows="3" placeholder="Tambahkan keterangan jika diperlukan..."></textarea>
-    </div>
-</div>
+                            <div class="form-group">
+                                <label>Keterangan</label>
+                                <textarea class="form-control" name="keterangan_keluar" rows="3"
+                                    placeholder="Tambahkan keterangan jika diperlukan..."></textarea>
+                            </div>
+                        </div>
 
 
                         <div id="peminjamanFields" style="display: none;">
@@ -223,6 +225,9 @@
 
 @push('scripts')
     <script>
+        const hasUpdatePermission = @json(auth()->user()->can('masuk.update'));
+    </script>
+    <script>
         const table = $("#barangTable").DataTable({
             ajax: {
                 url: "{{ url('/masuk') }}",
@@ -233,17 +238,16 @@
                 [10, 25, 50, 100, 1000, 100000]
             ],
             columns: [
-    @can('masuk.update')
-    {
-        data: null,
-        orderable: false,
-        searchable: false,
-        render: function(data) {
-            return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
-        }
-    },
-    @endcan
-                {
+                @can('masuk.update')
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
+                        }
+                    },
+                @endcan {
                     data: null,
                     render: function(data, type, row, meta) {
                         return meta.row + 1;
@@ -337,19 +341,22 @@
                 const api = this.api();
 
                 // Mapping column names to indexes (adjust if column order changes)
+                const baseIndex = hasUpdatePermission ? 1 : 0; // Jika ada checkbox di awal, offset +1
+
                 const columnIndexes = {
-                    'kode_rak': 2,
-                    'serial_number': 3,
-                    'kode_material': 4,
-                    'merk': 5,
-                    'spesifikasi': 6,
-                    'kategori': 7,
-                    'keadaan': 8,
-                    'lokasi': 9,
-                    'status': 10,
-                    'keterangan': 11,
-                    'tanggal_masuk': 12,
+                    'kode_rak': baseIndex + 1,
+                    'serial_number': baseIndex + 2,
+                    'kode_material': baseIndex + 3,
+                    'merk': baseIndex + 4,
+                    'spesifikasi': baseIndex + 5,
+                    'kategori': baseIndex + 6,
+                    'keadaan': baseIndex + 7,
+                    'lokasi': baseIndex + 8,
+                    'status': baseIndex + 9,
+                    'keterangan': baseIndex + 10,
+                    'tanggal_masuk': baseIndex + 11,
                 };
+
 
                 Object.entries(columnIndexes).forEach(([key, index]) => {
                     $(`#filter-${key}`).on('keyup change', function() {
@@ -431,52 +438,51 @@
         });
         let selectedBarang = new Set();
 
-// Saat checkbox dicentang/di-uncheck
-$(document).on('change', '.select-barang', function () {
-    const id = $(this).val();
-    if (this.checked) {
-        selectedBarang.add(id);
-    } else {
-        selectedBarang.delete(id);
-    }
+        // Saat checkbox dicentang/di-uncheck
+        $(document).on('change', '.select-barang', function() {
+            const id = $(this).val();
+            if (this.checked) {
+                selectedBarang.add(id);
+            } else {
+                selectedBarang.delete(id);
+            }
 
-    $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
-});
+            $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+        });
 
-// Saat "select all" di klik
-$(document).on('change', '#select-all', function () {
-    const checked = this.checked;
-    $('.select-barang').each(function () {
-        const id = $(this).val();
-        $(this).prop('checked', checked);
-        if (checked) {
-            selectedBarang.add(id);
-        } else {
-            selectedBarang.delete(id);
-        }
-    });
+        // Saat "select all" di klik
+        $(document).on('change', '#select-all', function() {
+            const checked = this.checked;
+            $('.select-barang').each(function() {
+                const id = $(this).val();
+                $(this).prop('checked', checked);
+                if (checked) {
+                    selectedBarang.add(id);
+                } else {
+                    selectedBarang.delete(id);
+                }
+            });
 
-    $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
-});
+            $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+        });
 
-// Saat tabel selesai di-render ulang, tandai checkbox yang sudah dipilih
-table.on('draw', function () {
-    $('.select-barang').each(function () {
-        const id = $(this).val();
-        $(this).prop('checked', selectedBarang.has(id));
-    });
+        // Saat tabel selesai di-render ulang, tandai checkbox yang sudah dipilih
+        table.on('draw', function() {
+            $('.select-barang').each(function() {
+                const id = $(this).val();
+                $(this).prop('checked', selectedBarang.has(id));
+            });
 
-    // Update "select all" status
-    const allVisible = $('.select-barang').length === $('.select-barang:checked').length;
-    $('#select-all').prop('checked', allVisible);
+            // Update "select all" status
+            const allVisible = $('.select-barang').length === $('.select-barang:checked').length;
+            $('#select-all').prop('checked', allVisible);
 
-    $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
-});
+            $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+        });
 
-// Saat submit, masukkan data ID yang tersimpan ke form hidden input
-$('#formMultiEdit').on('submit', function () {
-    $('#selectedBarangIds').val([...selectedBarang].join(','));
-});
-
+        // Saat submit, masukkan data ID yang tersimpan ke form hidden input
+        $('#formMultiEdit').on('submit', function() {
+            $('#selectedBarangIds').val([...selectedBarang].join(','));
+        });
     </script>
 @endpush

@@ -1,110 +1,123 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
+    <div class="container-fluid">
 
-    {{-- Header dan Tombol Aksi --}}
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between breadcrumb-content">
-                        <h5>List Peminjaman Perangkat</h5>
-                        <div class="pl-3 border-left btn-new">
-                            <a href="{{route('report.download.peminjaman','excel')}}" class="btn btn-success">
-                                <i class="bi bi-file-earmark-spreadsheet"></i> <span>Export Excel</span>
-                            </a>
-                            @can('peminjaman.update')
+        {{-- Header dan Tombol Aksi --}}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between breadcrumb-content">
+                            <h5>List Peminjaman Perangkat</h5>
+                            <div class="pl-3 border-left btn-new">
+                                <a href="{{ route('report.download.peminjaman', 'excel') }}" class="btn btn-success">
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> <span>Export Excel</span>
+                                </a>
+                                @can('peminjaman.update')
                                     <button class="btn btn-warning" id="btn-multi-edit" data-toggle="modal"
                                         data-target="#multiEditModal" disabled>
                                         <i class="bi bi-pencil"></i> Multi Edit
                                     </button>
                                 @endcan
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    @if($notif_7_hari > 0)
-    <div class="alert alert-warning alert-dismissible fade show" id="notif-7-hari" role="alert">
-        <i class="bi bi-bell-fill"></i> &nbsp; <span>{{$notif_7_hari}} Perangkat mendekati akhir masa sewa 7 hari kedepan</span>
-        <button type="button" class="close text-danger mt-1" data-dismiss="alert" aria-label="Close">
-            <i class="bi bi-x-circle"></i>
-        </button>
-    </div>
-    @endif
-    @if($notif_terlambat > 0 )
-    <div class="alert alert-danger alert-dismissible fade show" id="notif-terlambat" role="alert">
-        <i class="bi bi-bell-fill"></i> &nbsp; <span>{{$notif_terlambat}} Perangkat melewati masa peminjaman</span>
-        <button type="button" class="close text-danger mt-1" data-dismiss="alert" aria-label="Close">
-            <i class="bi bi-x-circle"></i>
-        </button>
-    </div>
-    @endif
-
-
-    {{-- Tabel Barang --}}
-    <div class="card">
-        <div class="card-body">
-            <p>
-                <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#advanced-search" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="bi bi-search"></i> <span>Advanced Search</span>
+        @if ($notif_7_hari > 0)
+            <div class="alert alert-warning alert-dismissible fade show" id="notif-7-hari" role="alert">
+                <i class="bi bi-bell-fill"></i> &nbsp; <span>{{ $notif_7_hari }} Perangkat mendekati akhir masa sewa 7 hari
+                    kedepan</span>
+                <button type="button" class="close text-danger mt-1" data-dismiss="alert" aria-label="Close">
+                    <i class="bi bi-x-circle"></i>
                 </button>
-            </p>
-            <div class="collapse" id="advanced-search">
-                <div id="column-filters" class="row g-4 mb-3">
-                    <div class="col-4 mb-2"><input type="text" id="filter-nomor_surat" class="form-control" placeholder="Nomor Surat"></div>
-                    <div class="col-4 mb-2"><input type="text" id="filter-serial_number" class="form-control" placeholder="Serial Number"></div>
-                    <div class="col-4 mb-2"><input type="text" id="filter-kode_material" class="form-control" placeholder="Kode Material"></div>
-                    <div class="col-4 mb-2"><x-inputs.select-merk id="filter-merk" selectId="nama"/></div>
-                    <div class="col-4 mb-2"><input type="text" id="filter-spesifikasi" class="form-control" placeholder="Spesifikasi"></div>
-                    <div class="col-4 mb-2"><x-inputs.select-kategori id="filter-kategori" selectId="nama" /></div>
-                    <div class="col-4 mb-2">
-    <label>Tanggal Masuk</label>
-    <input type="date" id="filter-tanggal_masuk" class="form-control" placeholder="Tanggal Masuk">
-</div>
-                    <div class="col-4 mb-2"><label>Tanggal BASTP</label><input type="date" id="filter-tanggal_bastp" class="form-control" placeholder="Tanggal BASTP"></div>
-                    <div class="col-4 mb-2"><label>Tanggal Selesai</label><input type="date" id="filter-tanggal_selesai" class="form-control" placeholder="Tanggal selesai"></div>
-                    <div class="col-4 mb-2"><input type="text" id="filter-pic" class="form-control" placeholder="PIC"></div>
-                    <div class="col-4 mb-2"><input type="text" id="filter-keterangan" class="form-control" placeholder="Keterangan"></div>
-                </div>
             </div>
+        @endif
+        @if ($notif_terlambat > 0)
+            <div class="alert alert-danger alert-dismissible fade show" id="notif-terlambat" role="alert">
+                <i class="bi bi-bell-fill"></i> &nbsp; <span>{{ $notif_terlambat }} Perangkat melewati masa
+                    peminjaman</span>
+                <button type="button" class="close text-danger mt-1" data-dismiss="alert" aria-label="Close">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+        @endif
 
-            <div class="table-responsive">
-                <table id="barangTable" class="table table-bordered">
-                    <thead>
-                        <tr>
-                            @can('masuk.update')
-            <th><input type="checkbox" id="select-all"></th>
-        @endcan
-                            <th>Nomor Surat</th>
-                            <th>Serial Number</th>
-                            <th>Kode Material</th>
-                            <th>Merk</th>
-                            <th>Spesifikasi</th>
-                            <th>Kategori</th>
-                            <th>Tanggal Masuk</th>
-                            <th>Tanggal BASTP</th>
-                            <th>Tanggal Selesai</th>
-                            <th>PIC</th>
-                            <th>Keterangan</th>
-                            <th>Sisa Waktu</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                </table>
+
+        {{-- Tabel Barang --}}
+        <div class="card">
+            <div class="card-body">
+                <p>
+                    <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#advanced-search"
+                        aria-expanded="false" aria-controls="collapseExample">
+                        <i class="bi bi-search"></i> <span>Advanced Search</span>
+                    </button>
+                </p>
+                <div class="collapse" id="advanced-search">
+                    <div id="column-filters" class="row g-4 mb-3">
+                        <div class="col-4 mb-2"><input type="text" id="filter-nomor_surat" class="form-control"
+                                placeholder="Nomor Surat"></div>
+                        <div class="col-4 mb-2"><input type="text" id="filter-serial_number" class="form-control"
+                                placeholder="Serial Number"></div>
+                        <div class="col-4 mb-2"><input type="text" id="filter-kode_material" class="form-control"
+                                placeholder="Kode Material"></div>
+                        <div class="col-4 mb-2"><x-inputs.select-merk id="filter-merk" selectId="nama" /></div>
+                        <div class="col-4 mb-2"><input type="text" id="filter-spesifikasi" class="form-control"
+                                placeholder="Spesifikasi"></div>
+                        <div class="col-4 mb-2"><x-inputs.select-kategori id="filter-kategori" selectId="nama" /></div>
+                        <div class="col-4 mb-2">
+                            <label>Tanggal Masuk</label>
+                            <input type="date" id="filter-tanggal_masuk" class="form-control"
+                                placeholder="Tanggal Masuk">
+                        </div>
+                        <div class="col-4 mb-2"><label>Tanggal BASTP</label><input type="date" id="filter-tanggal_bastp"
+                                class="form-control" placeholder="Tanggal BASTP"></div>
+                        <div class="col-4 mb-2"><label>Tanggal Selesai</label><input type="date"
+                                id="filter-tanggal_selesai" class="form-control" placeholder="Tanggal selesai"></div>
+                        <div class="col-4 mb-2"><input type="text" id="filter-pic" class="form-control"
+                                placeholder="PIC"></div>
+                        <div class="col-4 mb-2"><input type="text" id="filter-keterangan" class="form-control"
+                                placeholder="Keterangan"></div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="barangTable" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                @can('masuk.update')
+                                    <th><input type="checkbox" id="select-all"></th>
+                                @endcan
+                                <th>Nomor Surat</th>
+                                <th>Serial Number</th>
+                                <th>Kode Material</th>
+                                <th>Merk</th>
+                                <th>Spesifikasi</th>
+                                <th>Kategori</th>
+                                <th>Tanggal Masuk</th>
+                                <th>Tanggal BASTP</th>
+                                <th>Tanggal Selesai</th>
+                                <th>PIC</th>
+                                <th>Keterangan</th>
+                                <th>Sisa Waktu</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Multi Edit -->
+    <!-- Modal Multi Edit -->
     <div class="modal fade" id="multiEditModal" tabindex="-1" role="dialog" aria-labelledby="multiEditModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form id="formMultiEdit" method="POST" action="{{ route('peminjaman.multi-edit') }}" enctype="multipart/form-data">
+            <form id="formMultiEdit" method="POST" action="{{ route('peminjaman.multi-edit') }}"
+                enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="barang_ids" id="selectedBarangIds">
                 <div class="modal-content">
@@ -130,71 +143,110 @@
                         </div>
 
                         <div id="keluarFields" style="display: none;">
-    <div class="form-group">
-        <label>Tanggal Keluar</label>
-        <input type="date" class="form-control" name="tanggal_keluar">
-    </div>
+                            <div class="form-group">
+                                <label>Tanggal Keluar</label>
+                                <input type="date" class="form-control" name="tanggal_keluar">
+                            </div>
 
-    {{-- Tambahkan ini --}}
-    <div class="form-group">
-        <label>Berita Acara (PDF)</label>
-        <input type="file" class="form-control-file" name="berita_acara" accept="application/pdf">
-        <small class="text-muted">Maks. 2MB</small>
-    </div>
+                            {{-- Tambahkan ini --}}
+                            <div class="form-group">
+                                <label>Berita Acara (PDF)</label>
+                                <input type="file" class="form-control-file" name="berita_acara"
+                                    accept="application/pdf">
+                                <small class="text-muted">Maks. 2MB</small>
+                            </div>
 
-    <div class="form-group">
-        <label>Keterangan</label>
-        <textarea class="form-control" name="keterangan_keluar" rows="2"></textarea>
-    </div>
-</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                            <div class="form-group">
+                                <label>Keterangan</label>
+                                <textarea class="form-control" name="keterangan_keluar" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
                     </div>
-                </div>
             </form>
         </div>
     </div>
-
 @endsection
 
 @push('scripts')
-<script>
-    const selectedBarang = new Set();
+    <script>
+        const selectedBarang = new Set();
 
-    const table = $("#barangTable").DataTable({
-        lengthMenu: [[10, 25, 50, 100, 1000, 100000], [10, 25, 50, 100, 1000, 100000]],
-        ajax: {
-            url: "{{ url('/peminjaman') }}",
-            type: 'GET',
-        },
-        columns: [
-            @can('peminjaman.update')
-            {
-            data: null,
-            orderable: false,
-            searchable: false,
-            render: function(data) {
-                return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
-            }
-        },
-        @endcan
-        { data: 'nomor_surat', name: 'peminjaman.nomor_surat' },
-        { data: 'serial_number', name: 'barang.serial_number' },
-        { data: 'kode_material', name: 'barang.kode_material' },
-        { data: 'merk', name: 'merk.nama' },
-        { data: 'spesifikasi', name: 'barang.spesifikasi' },
-        { data: 'kategori', name: 'kategori.nama' },
-        { data: 'tanggal_masuk', name: 'masuk.tanggal_masuk' },
-        { data: 'tanggal_bastp', name: 'peminjaman.tanggal_bastp' },
-        { data: 'tanggal_selesai', name: 'peminjaman.tanggal_selesai' },
-        { data: 'pic', name: 'users.name' },
-        { data: 'keterangan', name: 'barang.keterangan' },
-        { data: 'sisa_waktu', name: 'sisa_waktu', searchable: false },
-        {
-            data: null,
-            render: function(data) {
-                return `
+        const table = $("#barangTable").DataTable({
+            lengthMenu: [
+                [10, 25, 50, 100, 1000, 100000],
+                [10, 25, 50, 100, 1000, 100000]
+            ],
+            ajax: {
+                url: "{{ url('/peminjaman') }}",
+                type: 'GET',
+            },
+            columns: [
+                @can('peminjaman.update')
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
+                        }
+                    },
+                @endcan {
+                    data: 'nomor_surat',
+                    name: 'peminjaman.nomor_surat'
+                },
+                {
+                    data: 'serial_number',
+                    name: 'barang.serial_number'
+                },
+                {
+                    data: 'kode_material',
+                    name: 'barang.kode_material'
+                },
+                {
+                    data: 'merk',
+                    name: 'merk.nama'
+                },
+                {
+                    data: 'spesifikasi',
+                    name: 'barang.spesifikasi'
+                },
+                {
+                    data: 'kategori',
+                    name: 'kategori.nama'
+                },
+                {
+                    data: 'tanggal_masuk',
+                    name: 'masuk.tanggal_masuk'
+                },
+                {
+                    data: 'tanggal_bastp',
+                    name: 'peminjaman.tanggal_bastp'
+                },
+                {
+                    data: 'tanggal_selesai',
+                    name: 'peminjaman.tanggal_selesai'
+                },
+                {
+                    data: 'pic',
+                    name: 'users.name'
+                },
+                {
+                    data: 'keterangan',
+                    name: 'barang.keterangan'
+                },
+                {
+                    data: 'sisa_waktu',
+                    name: 'sisa_waktu',
+                    searchable: false
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return `
                 <div class="d-flex">
                 @can('peminjaman.update')
                     <a href="/peminjaman/edit/${data.barang_id}" class="btn btn-sm btn-warning text-white btn-edit-barang mr-2">
@@ -202,95 +254,97 @@
                     </a>
                 @endcan
                 </div>`;
+                    },
+                    orderable: false,
+                    searchable: false,
+                }
+            ],
+            language: {
+                emptyTable: "Data not found.",
+                processing: 'Processing data...',
             },
-            orderable: false,
-            searchable: false,
-        }],
-        language: {
-            emptyTable: "Data not found.",
-            processing: 'Processing data...',
-        },
-        responsive: true,
-        processing: true,
-        serverSide: true,
-        orderCellsTop: true,
-        initComplete: function() {
-            const api = this.api();
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            orderCellsTop: true,
+            initComplete: function() {
+                const api = this.api();
+                const hasUpdatePermission = @json(auth()->user()->can('masuk.update'));
+                const offset = hasUpdatePermission ? 1 : 0;
 
-            const columnIndexes = {
-                'nomor_surat': 1,
-                'serial_number': 2,
-                'kode_material': 3,
-                'merk': 4,
-                'spesifikasi': 5,
-                'kategori': 6,
-                'tanggal_masuk': 7,
-                'tanggal_bastp': 8,
-                'tanggal_selesai': 9,
-                'pic': 10,
-                'keterangan': 11,
-            };
+                const columnIndexes = {
+                    'kode_rak': 0 + offset,
+                    'serial_number': 1 + offset,
+                    'kode_material': 2 + offset,
+                    'merk': 3 + offset,
+                    'spesifikasi': 4 + offset,
+                    'kategori': 5 + offset,
+                    'keadaan': 6 + offset,
+                    'lokasi': 7 + offset,
+                    'status': 8 + offset,
+                    'keterangan': 9 + offset,
+                    'tanggal_masuk': 10 + offset,
+                };
 
-            Object.entries(columnIndexes).forEach(([key, index]) => {
-                $(`#filter-${key}`).on('keyup change', function() {
-                    api.column(index).search(this.value).draw();
+                Object.entries(columnIndexes).forEach(([key, index]) => {
+                    $(`#filter-${key}`).on('keyup change', function() {
+                        api.column(index).search(this.value).draw();
+                    });
                 });
-            });
-        }
-    });
-
-    // Simpan & restore state checkbox saat draw
-    table.on('draw', function () {
-        $('.select-barang').each(function () {
-            const id = $(this).val();
-            $(this).prop('checked', selectedBarang.has(id));
+            }
         });
 
-        // Toggle select-all state
-        $('#select-all').prop('checked', $('.select-barang:checked').length === $('.select-barang').length);
+        // Simpan & restore state checkbox saat draw
+        table.on('draw', function() {
+            $('.select-barang').each(function() {
+                const id = $(this).val();
+                $(this).prop('checked', selectedBarang.has(id));
+            });
 
-        $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
-    });
+            // Toggle select-all state
+            $('#select-all').prop('checked', $('.select-barang:checked').length === $('.select-barang').length);
 
-    // Checkbox individual
-    $(document).on('change', '.select-barang', function () {
-        const id = $(this).val();
-        if (this.checked) {
-            selectedBarang.add(id);
-        } else {
-            selectedBarang.delete(id);
-        }
+            $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+        });
 
-        $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
-    });
-
-    // Checkbox select-all
-    $(document).on('change', '#select-all', function () {
-        const checked = this.checked;
-        $('.select-barang').each(function () {
+        // Checkbox individual
+        $(document).on('change', '.select-barang', function() {
             const id = $(this).val();
-            $(this).prop('checked', checked);
-            if (checked) {
+            if (this.checked) {
                 selectedBarang.add(id);
             } else {
                 selectedBarang.delete(id);
             }
+
+            $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
         });
 
-        $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
-    });
+        // Checkbox select-all
+        $(document).on('change', '#select-all', function() {
+            const checked = this.checked;
+            $('.select-barang').each(function() {
+                const id = $(this).val();
+                $(this).prop('checked', checked);
+                if (checked) {
+                    selectedBarang.add(id);
+                } else {
+                    selectedBarang.delete(id);
+                }
+            });
 
-    // Inject ke form saat submit
-    $('#formMultiEdit').on('submit', function () {
-        $('#selectedBarangIds').val([...selectedBarang].join(','));
-    });
+            $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+        });
 
-    // Tujuan dropdown toggle
-    $('#tujuanSelect').on('change', function () {
-        const tujuan = $(this).val();
-        $('#masukFields').toggle(tujuan === 'masuk');
-        $('#keluarFields').toggle(tujuan === 'keluar');
-    });
-</script>
+        // Inject ke form saat submit
+        $('#formMultiEdit').on('submit', function() {
+            $('#selectedBarangIds').val([...selectedBarang].join(','));
+        });
 
+        // Tujuan dropdown toggle
+        $('#tujuanSelect').on('change', function() {
+            const tujuan = $(this).val();
+            $('#masukFields').toggle(tujuan === 'masuk');
+            $('#keluarFields').toggle(tujuan === 'keluar');
+        });
+    </script>
 @endpush
