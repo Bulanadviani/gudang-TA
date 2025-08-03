@@ -173,6 +173,9 @@
 
 @push('scripts')
     <script>
+        const hasUpdatePermission = @json(auth()->user()->can('masuk.update'));
+    </script>
+    <script>
         const selectedBarang = new Set();
 
         const table = $("#barangTable").DataTable({
@@ -273,17 +276,17 @@
                 const offset = hasUpdatePermission ? 1 : 0;
 
                 const columnIndexes = {
-                    'kode_rak': 0 + offset,
+                    'nomor_surat': 0 + offset,
                     'serial_number': 1 + offset,
                     'kode_material': 2 + offset,
                     'merk': 3 + offset,
                     'spesifikasi': 4 + offset,
                     'kategori': 5 + offset,
-                    'keadaan': 6 + offset,
-                    'lokasi': 7 + offset,
-                    'status': 8 + offset,
-                    'keterangan': 9 + offset,
-                    'tanggal_masuk': 10 + offset,
+                    'tanggal_masuk': 6 + offset,
+                    'tanggal_bastp': 7 + offset,
+                    'tanggal_selesai': 8 + offset,
+                    'pic': 9 + offset,
+                    'keterangan': 10 + offset,
                 };
 
                 Object.entries(columnIndexes).forEach(([key, index]) => {
