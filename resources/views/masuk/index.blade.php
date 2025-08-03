@@ -425,5 +425,54 @@
             }).get();
             $('#selectedBarangIds').val(selectedIds.join(','));
         });
+        let selectedBarang = new Set();
+
+// Saat checkbox dicentang/di-uncheck
+$(document).on('change', '.select-barang', function () {
+    const id = $(this).val();
+    if (this.checked) {
+        selectedBarang.add(id);
+    } else {
+        selectedBarang.delete(id);
+    }
+
+    $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+});
+
+// Saat "select all" di klik
+$(document).on('change', '#select-all', function () {
+    const checked = this.checked;
+    $('.select-barang').each(function () {
+        const id = $(this).val();
+        $(this).prop('checked', checked);
+        if (checked) {
+            selectedBarang.add(id);
+        } else {
+            selectedBarang.delete(id);
+        }
+    });
+
+    $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+});
+
+// Saat tabel selesai di-render ulang, tandai checkbox yang sudah dipilih
+table.on('draw', function () {
+    $('.select-barang').each(function () {
+        const id = $(this).val();
+        $(this).prop('checked', selectedBarang.has(id));
+    });
+
+    // Update "select all" status
+    const allVisible = $('.select-barang').length === $('.select-barang:checked').length;
+    $('#select-all').prop('checked', allVisible);
+
+    $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+});
+
+// Saat submit, masukkan data ID yang tersimpan ke form hidden input
+$('#formMultiEdit').on('submit', function () {
+    $('#selectedBarangIds').val([...selectedBarang].join(','));
+});
+
     </script>
 @endpush

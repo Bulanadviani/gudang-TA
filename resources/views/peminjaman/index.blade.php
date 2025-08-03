@@ -158,6 +158,8 @@
 
 @push('scripts')
 <script>
+    const selectedBarang = new Set();
+
     const table = $("#barangTable").DataTable({
         lengthMenu: [[10, 25, 50, 100, 1000, 100000], [10, 25, 50, 100, 1000, 100000]],
         ajax: {
@@ -166,87 +168,39 @@
         },
         columns: [{
             data: null,
-        orderable: false,
-        searchable: false,
-        render: function(data) {
-            return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
-        }
-    },
-    {
-                data: 'nomor_surat',
-                name: 'peminjaman.nomor_surat'
-            },
-            {
-                data: 'serial_number',
-                name: 'barang.serial_number'
-            },
-            {
-                data: 'kode_material',
-                name: 'barang.kode_material'
-            },
-            {
-                data: 'merk',
-                name: 'merk.nama'
-            },
-            {
-                data: 'spesifikasi',
-                name: 'barang.spesifikasi'
-            },
-            {
-                data: 'kategori',
-                name: 'kategori.nama'
-            },
-            {
-                    data: 'tanggal_masuk',
-                    name: 'masuk.tanggal_masuk'
-                },
-            {
-                data: 'tanggal_bastp',
-                name: 'peminjaman.tanggal_bastp'
-            },
-            {
-                data: 'tanggal_selesai',
-                name: 'peminjaman.tanggal_selesai'
-            },
-            {
-                data: 'pic',
-                name: 'users.name'
-            },
-            {
-                data: 'keterangan',
-                name: 'barang.keterangan'
-            },
-            {
-                data: 'sisa_waktu',
-                name: 'sisa_waktu',
-                searchable: false
-            },
-            {
-                data: null,
-                render: function(data, type, row) {
-                    return `
-                    <div class="d-flex">
-                    @can('peminjaman.update')
-                      <a href="/peminjaman/edit/${data.barang_id}"
-                        class="btn btn-sm btn-warning text-white btn-edit-barang mr-2"
-                            >
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                    @endcan
-                    </div>
-                      `
-                },
-                orderable: false,
-                searchable: false,
-            },
-
-        ],
-
-        createdRow: (row, data, dataIndex) => {
-            $(row).find(`.show-action-pop`).on('click', function() {
-                showActionDetail(data);
-            });
+            orderable: false,
+            searchable: false,
+            render: function(data) {
+                return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
+            }
         },
+        { data: 'nomor_surat', name: 'peminjaman.nomor_surat' },
+        { data: 'serial_number', name: 'barang.serial_number' },
+        { data: 'kode_material', name: 'barang.kode_material' },
+        { data: 'merk', name: 'merk.nama' },
+        { data: 'spesifikasi', name: 'barang.spesifikasi' },
+        { data: 'kategori', name: 'kategori.nama' },
+        { data: 'tanggal_masuk', name: 'masuk.tanggal_masuk' },
+        { data: 'tanggal_bastp', name: 'peminjaman.tanggal_bastp' },
+        { data: 'tanggal_selesai', name: 'peminjaman.tanggal_selesai' },
+        { data: 'pic', name: 'users.name' },
+        { data: 'keterangan', name: 'barang.keterangan' },
+        { data: 'sisa_waktu', name: 'sisa_waktu', searchable: false },
+        {
+            data: null,
+            render: function(data) {
+                return `
+                <div class="d-flex">
+                @can('peminjaman.update')
+                    <a href="/peminjaman/edit/${data.barang_id}" class="btn btn-sm btn-warning text-white btn-edit-barang mr-2">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                @endcan
+                </div>`;
+            },
+            orderable: false,
+            searchable: false,
+        }],
         language: {
             emptyTable: "Data not found.",
             processing: 'Processing data...',
@@ -258,7 +212,6 @@
         initComplete: function() {
             const api = this.api();
 
-            // Mapping column names to indexes (adjust if column order changes)
             const columnIndexes = {
                 'nomor_surat': 1,
                 'serial_number': 2,
@@ -279,31 +232,60 @@
                 });
             });
         }
-
     });
 
-    $(document).on('change', '.select-barang, #select-all', function() {
-            if (this.id === 'select-all') {
-                $('.select-barang').prop('checked', this.checked);
+    // Simpan & restore state checkbox saat draw
+    table.on('draw', function () {
+        $('.select-barang').each(function () {
+            const id = $(this).val();
+            $(this).prop('checked', selectedBarang.has(id));
+        });
+
+        // Toggle select-all state
+        $('#select-all').prop('checked', $('.select-barang:checked').length === $('.select-barang').length);
+
+        $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+    });
+
+    // Checkbox individual
+    $(document).on('change', '.select-barang', function () {
+        const id = $(this).val();
+        if (this.checked) {
+            selectedBarang.add(id);
+        } else {
+            selectedBarang.delete(id);
+        }
+
+        $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+    });
+
+    // Checkbox select-all
+    $(document).on('change', '#select-all', function () {
+        const checked = this.checked;
+        $('.select-barang').each(function () {
+            const id = $(this).val();
+            $(this).prop('checked', checked);
+            if (checked) {
+                selectedBarang.add(id);
+            } else {
+                selectedBarang.delete(id);
             }
-
-            const anyChecked = $('.select-barang:checked').length > 0;
-            $('#btn-multi-edit').prop('disabled', !anyChecked);
         });
 
-        // Tujuan dropdown toggle
-        $('#tujuanSelect').on('change', function() {
-            const tujuan = $(this).val();
-            $('#masukFields').toggle(tujuan === 'masuk');
-            $('#keluarFields').toggle(tujuan === 'keluar');
-        });
+        $('#btn-multi-edit').prop('disabled', selectedBarang.size === 0);
+    });
 
-        // On submit, inject selected IDs
-        $('#formMultiEdit').on('submit', function() {
-            const selectedIds = $('.select-barang:checked').map(function() {
-                return this.value;
-            }).get();
-            $('#selectedBarangIds').val(selectedIds.join(','));
-        });
+    // Inject ke form saat submit
+    $('#formMultiEdit').on('submit', function () {
+        $('#selectedBarangIds').val([...selectedBarang].join(','));
+    });
+
+    // Tujuan dropdown toggle
+    $('#tujuanSelect').on('change', function () {
+        const tujuan = $(this).val();
+        $('#masukFields').toggle(tujuan === 'masuk');
+        $('#keluarFields').toggle(tujuan === 'keluar');
+    });
 </script>
+
 @endpush
