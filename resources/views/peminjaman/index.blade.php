@@ -76,7 +76,9 @@
                 <table id="barangTable" class="table table-bordered">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="select-all"></th>
+                            @can('masuk.update')
+            <th><input type="checkbox" id="select-all"></th>
+        @endcan
                             <th>Nomor Surat</th>
                             <th>Serial Number</th>
                             <th>Kode Material</th>
@@ -166,7 +168,9 @@
             url: "{{ url('/peminjaman') }}",
             type: 'GET',
         },
-        columns: [{
+        columns: [
+            @can('peminjaman.update')
+            {
             data: null,
             orderable: false,
             searchable: false,
@@ -174,6 +178,7 @@
                 return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
             }
         },
+        @endcan
         { data: 'nomor_surat', name: 'peminjaman.nomor_surat' },
         { data: 'serial_number', name: 'barang.serial_number' },
         { data: 'kode_material', name: 'barang.kode_material' },

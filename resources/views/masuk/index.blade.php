@@ -95,7 +95,9 @@
                     <table id="barangTable" class="table table-bordered">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="select-all"></th>
+                                @can('masuk.update')
+            <th><input type="checkbox" id="select-all"></th>
+        @endcan
                                 <th>No</th>
                                 <th>Kode Rak</th>
                                 <th>Serial Number</th>
@@ -230,15 +232,17 @@
                 [10, 25, 50, 100, 1000, 100000],
                 [10, 25, 50, 100, 1000, 100000]
             ],
-            columns: [{
-
-                    data: null,
-                    orderable: false,
-                    searchable: false,
-                    render: function(data) {
-                        return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
-                    }
-                },
+            columns: [
+    @can('masuk.update')
+    {
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: function(data) {
+            return `<input type="checkbox" class="select-barang" value="${data.barang_id}">`;
+        }
+    },
+    @endcan
                 {
                     data: null,
                     render: function(data, type, row, meta) {
