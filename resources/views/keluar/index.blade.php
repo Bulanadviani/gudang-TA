@@ -141,6 +141,10 @@
                 type: 'GET',
             },
             lengthMenu: [[10, 25, 50, 100, 1000, 100000], [10, 25, 50, 100, 1000, 100000]],
+            language: {
+                emptyTable: "Data not found.",
+                processing: 'Processing data...',
+            },
             columns: [{
                     data: null,
                     name: 'no',
